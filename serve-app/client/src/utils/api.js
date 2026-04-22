@@ -4,6 +4,14 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   r => r,
   err => {
@@ -17,8 +25,8 @@ api.interceptors.response.use(
 
 export const auth = {
 login: (email, password) => api.post('/api/auth/login', { email, password }),
-  me: () => api.get('/auth/me'),
-  register: (data) => api.post('/auth/register', data),
+me: () => api.get('/api/auth/me'),
+register: (data) => api.post('/api/auth/register', data),
 };
 
 export const teams = {
