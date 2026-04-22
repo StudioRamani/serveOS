@@ -1,11 +1,19 @@
-const cors = require('cors');
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const app = express();
-app.use(cors());
+require('dotenv').config();
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
+const app = express();
+
+// ✅ Correct CORS (ONLY ONE)
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://serve-os-indol.vercel.app'
+  ],
+  credentials: true
+}));
+
+// ✅ JSON parser (ONLY ONE)
 app.use(express.json());
 
 // Routes
@@ -20,7 +28,10 @@ app.use('/api/availability', require('./routes/availability'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', version: '1.0.0' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Serve app running on port ${PORT}`));
