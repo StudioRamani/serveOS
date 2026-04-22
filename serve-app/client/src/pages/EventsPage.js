@@ -15,7 +15,16 @@ export default function EventsPage() {
   const [form, setForm] = useState({ title: '', event_date: '', start_time: '', end_time: '', venue: '', event_type: 'sunday_service', description: '' });
 
   useEffect(() => {
-    eventsApi.list().then(r => setEventsList(r.data)).finally(() => setLoading(false));
+    eventsApi.list().then(r => {
+            setEventsList(r.data);
+                  const today = new Date();
+                        const upcoming = r.data
+                                .map(e => new Date(e.event_date))
+                                        .filter(d => d >= startOfMonth(today))
+                                                .sort((a, b) => a - b);
+                                                      if (upcoming.length > 0) setCurrentMonth(upcoming[0]);
+                                                          }).finally(() => setLoading(false));
+    })
   }, []);
 
   const handleCreate = async (e) => {
